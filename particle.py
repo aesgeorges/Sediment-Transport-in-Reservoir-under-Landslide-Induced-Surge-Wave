@@ -1,6 +1,5 @@
 class Particle:
-    def __init__(self, x, y, rhor):
-        self.x = x
+    def __init__(self, y):
+        self.x = 0
         self.y = y
-        self.rhor = rhor
-
+        self.rhor = 1.25
