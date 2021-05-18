@@ -35,14 +35,14 @@ class Column:
         rho = rho0*(1-alpha*(self.temp - 15))
 
         # Brunt-Vaisala Frequency from density profile
-        brunt = math.sqrt((-g/rho0)*(rho(2)-rho(1))/(dz))
+        #brunt = math.sqrt((-g/rho0)*(rho(2)-rho(1))/(dz))
         n_bv = np.zeros(N)
-        for i in range(N-1):
+        for i in range(N-2):
             n_bv[i] = math.sqrt((-g/rho0)*(rho[i+1]-rho[i])/(dz))
-        n_bv[N] = math.sqrt((-g/rho0)*(rho[N]-rho[N-1])/(dz))
+        n_bv[N-1] = math.sqrt((-g/rho0)*(rho[N-1]-rho[N-2])/(dz))
 
         # Initial Conditions
-        for i in range(N):
+        for i in range(N-1):
             self.q[i] = math.sqrt(self.q2[i])
 
         self.L = -kappa*H*(self.z/H)*(1-(self.z/H))
@@ -63,7 +63,8 @@ class Column:
         # Particles generation
         # Will implement gaussian distribution later
         for p in self.particles:
-            p = Particle(-H/2)
+            rand_rhor = np.random.normal(loc=1.25, scale=0.75)
+            p = Particle(-H/2, rand_rhor)
 
 
 

@@ -1,5 +1,7 @@
+import numpy as np
+
 class Particle:
-    def __init__(self, y):
+    def __init__(self, y, rhor):
         self.x = 0
-        self.y = y
-        self.rhor = 1.25
+        self.y = np.random.rand()*y
+        self.rhor = rhor
