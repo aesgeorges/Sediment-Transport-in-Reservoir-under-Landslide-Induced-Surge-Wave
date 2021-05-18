@@ -22,7 +22,7 @@ class Column:
         self.nu_t = np.zeros(N) # Turbulent viscosity
         self.kq = np.zeros(N) # Turbulent diffusivity for q2
         self.kz = np.zeros(N) # Turbulent scalar diffusivity
-        self.particles = np.zeros(pop)
+        self.particles = []
 
     def setup(self, N, H, A, B, C, E, Sq, kappa, SMALL, nu, g, z0, zb, u_crit, Ar, rho0, alpha, pop):
         dz = H/N
@@ -62,9 +62,13 @@ class Column:
 
         # Particles generation
         # Will implement gaussian distribution later
-        for p in self.particles:
+        for i in range(N-1):
             rand_rhor = np.random.normal(loc=1.25, scale=0.75)
-            p = Particle(-H/2, rand_rhor)
+            rand_D = np.random.normal(loc=0.005025, scale=0.004975)
+            rand_z = np.random.rand() * (-H/2)
+            p = Particle(rand_z, rand_rhor, rand_D)
+            self.particles.append(p)
+            print(p)
 
 
 
