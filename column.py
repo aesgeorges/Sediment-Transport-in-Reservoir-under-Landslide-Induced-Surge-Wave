@@ -68,7 +68,6 @@ class Column:
             rand_z = np.random.rand() * (-H/2)
             p = Particle(rand_z, rand_rhor, rand_D)
             self.particles.append(p)
-            print(p)
 
 
 

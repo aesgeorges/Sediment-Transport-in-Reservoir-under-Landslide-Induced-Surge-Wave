@@ -1,12 +1,10 @@
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import subplot
-
-def animation():
-    return
+from matplotlib.animation import FuncAnimation
 
 def plot(x,y):
-    fig, ax = plt.subplots()
-    ax.plot(x,y)
+    #fig, ax = plt.subplots()
+    plt.plot(x,y)
     plt.show()
 
 def plot_parts(c):
