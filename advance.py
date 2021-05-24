@@ -90,23 +90,15 @@ def update_param(c, SMALL, A, B, C):
         sh[i] = A[1]*(1-6*A[0]/B[0])/(1-3*A[1]*gh*(B[1]+6*A[0]))
     return sm, sh, gh
 
-def TDMA(a, b, c, d):
-    n = len(d)
-    w= np.zeros(n-1,float)
-    g= np.zeros(n, float)
-    p = np.zeros(n,float)
-    
-    w[0] = c[0]/b[0]
-    g[0] = d[0]/b[0]
-
-    for i in range(1,n-1):
-        w[i] = c[i]/(b[i] - a[i-1]*w[i-1])
-    for i in range(1,n):
-        g[i] = (d[i] - a[i-1]*g[i-1])/(b[i] - a[i-1]*w[i-1])
-    p[n-1] = g[n-1]
-    for i in range(n-1,0,-1):
-        p[i-1] = g[i-1] - w[i-1]*p[i]
-    return p
+def TDMA(aX, bX, cX, dX, N):
+    x = np.zeros(N)
+    for i in range(1, N):
+        bX[i] = bX[i] - aX[i]/bX[i-1]*cX[i-1]
+        dX[i] = dX[i] - aX[i]/bX[i-1]*dX[i-1]
+    x[-1] = dX[-1]/bX[-1]
+    for i in range(N-2, -1, -1):
+        x[i] = (1/bX[i])*(dX[i] - cX[i]*x[i+1])
+    return x
 
 # Velocity (U,V)
 def velocity(c, N, C_D, kappa, beta, dt, Px, up, nu_tp): 
@@ -124,13 +116,7 @@ def velocity(c, N, C_D, kappa, beta, dt, Px, up, nu_tp):
     bU[-1] = 1 + 0.5*beta*(nu_tp[-1] + nu_tp[N-2])
     dU[-1] = up[-1] - dt*Px[-1]
     # TDMA to solve for u
-    #u = TDMA(aU, bU, cU, dU)
-    for i in range(1, N):
-        bU[i] = bU[i] - aU[i]/bU[i-1]*cU[i-1]
-        dU[i] = dU[i] - aU[i]/bU[i-1]*dU[i-1]
-    u[-1] = dU[-1]/bU[-1]
-    for i in range(N-2, -1, -1):
-        u[i] = (1/bU[i])*(dU[i] - cU[i]*u[i+1])
+    u = TDMA(aU, bU, cU, dU, N)
     return u
 
 # q2 - Turbulence Paramater
@@ -154,13 +140,8 @@ def turb_q2(c, N, beta, dt, B, u_star, up, nu_tp, kqp, kzp, lp, n_bvp, q2p, SMAL
     bQ2[-1] = 1+0.5*beta*(kqp[-1] + 2*kqp[-1] + c.kq[N-2]) + diss
     dQ2[-1] = q2p[-1] + 0.25*beta*nu_tp[-1]*((up[-1] - up[N-2])**2) -4*dt*kzp[-1]*(n_bvp[-1]**2)
     # TDMA to solve for q2
-    #q2 = TDMA(aQ2, bQ2, cQ2, dQ2)
-    for i in range(1, N):
-        bQ2[i] = bQ2[i] - aQ2[i]/bQ2[i-1]*cQ2[i-1]
-        dQ2[i] = dQ2[i] - aQ2[i]/bQ2[i-1]*dQ2[i-1]
-    q2[-1] = dQ2[-1]/bQ2[-1]
-    for i in range(N-2, -1, -1):
-        q2[i] = (1/bQ2[i])*(dQ2[i] - cQ2[i]*q2[i+1])
+    q2 = TDMA(aQ2, bQ2, cQ2, dQ2, N)
+    # Making sure to prevent negative values
     for i in range(N):
         if q2[i] < SMALL:
             q2[i] = SMALL
@@ -186,13 +167,8 @@ def turb_q2l(c, N, beta, dt, B, E, u_star, kappa, H, up, nu_tp, zb, kqp, kzp, q2
     bQ2l[-1] = 1+0.5*beta*(kqp[-1] + 2*kqp[-1] + kqp[N-2]) + diss # Are we using kq or kqp here?
     dQ2l[-1] = q2lp[-1] + 0.25*beta*nu_tp[-1]*E[0]*lp[-1]*(up[-1]-up[N-2])**2 - 2*dt*lp[-1]*E[0]*kzp[-1]*(n_bvp[-1]**2)
     # TDMA to solve for q2
-    #q2l = TDMA(aQ2l, bQ2l, cQ2l, dQ2l)
-    for i in range(1, N):
-        bQ2l[i] = bQ2l[i] - aQ2l[i]/bQ2l[i-1]*cQ2l[i-1]
-        dQ2l[i] = dQ2l[i] - aQ2l[i]/bQ2l[i-1]*dQ2l[i-1]
-    q2l[-1] = dQ2l[-1]/bQ2l[-1]
-    for i in range(N-2, -1, -1):
-        q2l[i] = (1/bQ2l[i])*(dQ2l[i] - cQ2l[i]*q2l[i+1])
+    q2l = TDMA(aQ2l, bQ2l, cQ2l, dQ2l, N)
+    # Making sure to prevent negative values
     for i in range(N):
         if q2l[i] < SMALL:
             q2l[i] = SMALL

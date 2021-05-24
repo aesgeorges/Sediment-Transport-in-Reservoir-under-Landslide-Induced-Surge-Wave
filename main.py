@@ -26,12 +26,12 @@ def animate(i):
     #for m in range(1,M):
     t.append(dt*(i))
     advance(c, N, C_D, kappa, beta, dt, px0, t_px, t[i], SMALL, zb, Sq, nu)
-    #print('advance... t = '+str(t[i])+' s.')
+    print('advance... t = '+str(t[i])+' s.')
     #print(c.kz)
     line.set_data(c.u, c.z)
     return line,
 
-ani = FuncAnimation(fig, animate, frames = M, interval=dt, repeat=False)
+ani = FuncAnimation(fig, animate, frames = M, interval=dt, repeat=True)
 plt.style.use('ggplot')
 
 plt.show()
