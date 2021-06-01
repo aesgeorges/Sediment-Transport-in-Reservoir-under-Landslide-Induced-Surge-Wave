@@ -1,6 +1,5 @@
 import numpy as np
-from numpy.core.fromnumeric import shape
-from parameters import N, A, B, C, E, H
+from parameters import N, A, B, C, E, H, dz, rho0, g, alpha, u_crit
 import math
 # Time advancement functions
 # Each function performs a single time-step for a corresponding component
@@ -13,6 +12,13 @@ bU = np.zeros(N)
 cU = np.zeros(N)
 dU = np.zeros(N)
 u = np.zeros(N)
+
+aC = np.zeros(N)
+bC = np.zeros(N)
+cC = np.zeros(N)
+dC = np.zeros(N)
+n_bv = np.zeros(N)
+rho = np.zeros(N)
 
 aQ2 = np.zeros(N)
 bQ2 = np.zeros(N)
@@ -43,21 +49,30 @@ nu_tp = []
 up = []
 vp = []
 n_bvp = []
+tempp = []
 #u_star = 0
 
 # Function to advance all components of column
 def advance(c, N, C_D, kappa, beta, dt, px0, t_px, t, SMALL, zb, Sq, nu):
-    [up, vp, nu_tp, q2p, q2lp, lp, kqp, kzp, n_bvp] = previous(c)
+    [up, vp, nu_tp, q2p, q2lp, lp, kqp, kzp, n_bvp, tempp] = previous(c)
     u_star = abs(c.u[0]*math.sqrt(C_D))
     Px = pressure(N, t_px, px0, t)
     [c.sm, c.sh, c.gh] = update_param(c, SMALL, A, B, C)
     c.u = velocity(c, N, C_D, kappa, beta, dt, Px, up, nu_tp)  
+    [c.temp, c.n_bv, c.rho] = scalar_trans(c, beta, kzp, tempp, dz, g, rho0, alpha)
     c.q2 = turb_q2(c, N, beta, dt, B, u_star, up, nu_tp, kqp, kzp, lp, n_bvp, q2p, SMALL)
     c.q2L = turb_q2l(c, N, beta, dt, B, E, u_star, kappa, H, up, nu_tp, zb, kqp, kzp, q2lp, lp, n_bvp, q2p, SMALL)
     [c.kq, c.nu_t, c.kz, c.q, c.q2L, c.L] = turbmix(c, SMALL, zb, Sq, nu)
+    # Particle tracking
+    for part in c.particles:
+        pos = part.tracking(g, nu, c.u, dz, dt, N, u_star, u_crit, H, kzp)
+        part.x = pos[0]
+        part.z = pos[1]
+
 
 # Save previous step
 def previous(c):
+    tempp = c.temp
     up = c.u
     vp = c.v
     nu_tp = c.nu_t
@@ -67,7 +82,7 @@ def previous(c):
     kqp = c.kq
     kzp = c.kz
     n_bvp = c.n_bv
-    return up, vp, nu_tp, q2p, q2lp, lp, kqp, kzp, n_bvp
+    return up, vp, nu_tp, q2p, q2lp, lp, kqp, kzp, n_bvp, tempp
 
 # Pressure update
 def pressure(N, t_px, px0, t):
@@ -118,6 +133,32 @@ def velocity(c, N, C_D, kappa, beta, dt, Px, up, nu_tp):
     # TDMA to solve for u
     u = TDMA(aU, bU, cU, dU, N)
     return u
+
+# scalar density - advance 
+def scalar_trans(c, beta, kzp, cp, dz, g, rho0, alpha):
+    for i in range(1, N-1):
+        aC[i] = -0.5*beta*(kzp[i] + kzp[i-1])
+        bC[i] = 1+0.5*beta*(kzp[i+1] + 2*kzp[i+1] + kzp[i-1])
+        cC[i] = -0.5*beta*(kzp[i] + kzp[i+1])
+        dC[i] = cp[i]
+    # Bottom-Boundary: no flux for scalars
+    bC[0] = 1+0.5*beta*(kzp[1] + kzp[0])
+    cC[0] = -0.5*beta*(kzp[1] + kzp[0])
+    dC[0] =  cp[0]
+    # Top-Boundary: no flux for scalars
+    aC[-1] = -0.5*beta*(kzp[-1] + kzp[N-2])
+    bC[-1] = 1+0.5*beta*(kzp[-1] + kzp[N-2])
+    dC[-1] = cp[-1]
+    # TDMA to solve for C
+    temp = TDMA(aC, bC, cC, dC, N)
+    # Update density and Brunt-Vaisala frequency
+    for i in range(N):
+        rho[i] = rho0*(1-alpha*(temp[i] - 15))
+    n_bv[0] = math.sqrt((-g/rho0)*(c.rho[1]-c.rho[0])/dz)
+    for i in range(1, N-1):
+        n_bv[i] = math.sqrt((-g/rho0)*(c.rho[i+1] - c.rho[i-1])/(2*dz))
+    n_bv[-1] = math.sqrt((-g/rho0)*(c.rho[-1] - c.rho[N-2])/dz)
+    return temp, n_bv, rho
 
 # q2 - Turbulence Paramater
 def turb_q2(c, N, beta, dt, B, u_star, up, nu_tp, kqp, kzp, lp, n_bvp, q2p, SMALL):

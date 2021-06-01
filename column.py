@@ -2,12 +2,10 @@
 # U, V, Q2, Q2L, Q2L, L, temp, Gh, Sm, Sh, Kq, nu_t, Kz, particles
 import numpy as np
 import math
-
 from particle import Particle
 
-
 class Column:
-    def __init__(self, N, H, SMALL, pop):
+    def __init__(self, N, H, SMALL):
         self.z = np.zeros(N)
         self.u = np.zeros(N)
         self.v = np.zeros(N)
@@ -23,6 +21,7 @@ class Column:
         self.kq = np.zeros(N) # Turbulent diffusivity for q2
         self.kz = np.zeros(N) # Turbulent scalar diffusivity
         self.n_bv = np.zeros(N)
+        self.rho = np.zeros(N)
         self.particles = []
 
     def setup(self, N, H, A, B, C, E, Sq, kappa, SMALL, nu, g, z0, zb, u_crit, Ar, rho0, alpha, pop):
@@ -32,19 +31,27 @@ class Column:
         for i in range(N):
             self.z[i] = -H + dz*((i+1) - 0.5)
         # Temperature Distribution
-        for t in self.temp:
-            t = 15
+        de1C = 5 # Change in temperature at initial thermocline
+        zde1C = -5 # Position of initial thermocline
+        dzde1C = -2 # Width of initial thermocline 
+        for i in range(N):
+            self.temp[i] = 15
+            if self.z[i] <= zde1C - 0.5*dzde1C:
+                self.temp[i] = 15
+            elif self.z[i] >= zde1C + 0.5*dzde1C:
+                self.temp[i] = 15 + de1C
+            else:
+                self.temp[i] = 15 + de1C*(self.z[i] - zde1C + 0.5*dzde1C) / dzde1C
+            self.rho[i] = rho0*(1-alpha*(self.temp[i] - 15))
         
         # Density distribution from Temperature
-        rho = rho0*(1-alpha*(self.temp - 15))
+        self.rho = rho0*(1-alpha*(self.temp - 15))
 
         # Brunt-Vaisala Frequency from density profile
-        #brunt = math.sqrt((-g/rho0)*(rho(2)-rho(1))/(dz))
-        #n_bv = np.zeros(N)
-        self.n_bv[0] = math.sqrt((-g/rho0)*(rho[1]-rho[0])/(dz))
+        self.n_bv[0] = math.sqrt((-g/rho0)*(self.rho[1]-self.rho[0])/(dz))
         for i in range(1,N-1):
-            self.n_bv[i] = math.sqrt((-g/rho0)*(rho[i+1]-rho[i])/(dz))
-        self.n_bv[N-1] = math.sqrt((-g/rho0)*(rho[N-1]-rho[N-2])/(dz))
+            self.n_bv[i] = math.sqrt((-g/rho0)*(self.rho[i+1]-self.rho[i])/(dz))
+        self.n_bv[N-1] = math.sqrt((-g/rho0)*(self.rho[N-1]-self.rho[N-2])/(dz))
 
         # Initial Conditions
         for i in range(N):
@@ -66,11 +73,11 @@ class Column:
 
         # Particles generation
         # Will implement gaussian distribution later
-        for i in range(N):
-            rand_rhor = np.random.normal(loc=1.25, scale=0.75)
-            rand_D = np.random.normal(loc=0.005025, scale=0.004975)
+        for i in range(pop):
+            rand_rhor = np.random.normal(loc=2.5, scale=0.75)
+            rand_D = np.random.normal(loc=0.0001, scale=0.004975)
             rand_z = np.random.rand() * (-H/2)
-            p = Particle(rand_z, rand_rhor, rand_D)
+            p = Particle(rand_z, rand_rhor, 0.0001)
             self.particles.append(p)
 
 
