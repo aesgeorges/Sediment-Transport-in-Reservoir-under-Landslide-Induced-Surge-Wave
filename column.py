@@ -74,10 +74,10 @@ class Column:
         # Particles generation
         # Will implement gaussian distribution later
         for i in range(pop):
-            rand_rhor = np.random.normal(loc=2.5, scale=0.75)
-            rand_D = np.random.normal(loc=0.0001, scale=0.004975)
+            rand_rhor = np.random.normal(loc=2.5, scale=1.25)
+            rand_D = np.random.normal(loc=0.0001, scale=0.00004975)
             rand_z = np.random.rand() * (-H/2)
-            p = Particle(rand_z, rand_rhor, 0.0001)
+            p = Particle(rand_z, rand_rhor, rand_D)
             self.particles.append(p)
 
 

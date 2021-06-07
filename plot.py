@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import subplot
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, FFMpegWriter
+import matplotlib.animation as animation
 
 def plot(x,y):
     #fig, ax = plt.subplots()

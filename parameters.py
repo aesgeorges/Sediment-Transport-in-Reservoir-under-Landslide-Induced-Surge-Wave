@@ -14,11 +14,11 @@ px0 = 0.001 # Magnitude of pressure gradient forcing
 t_px = 12.4 # Periodic pressure forcing
 
 # Model Parameters
-H = 5 # Column depth (m)
+H = 10 # Column depth (m)
 N = 80  # No. of grid points
 dt = 60  # Size of time step (s)
 M = 900  # No. of time steps
-pop = 500  # No. of particles in column
+pop = 1200  # No. of particles in column
 dz = H/N
 beta = dt/(dz**2)
 

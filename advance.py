@@ -65,9 +65,12 @@ def advance(c, N, C_D, kappa, beta, dt, px0, t_px, t, SMALL, zb, Sq, nu):
     [c.kq, c.nu_t, c.kz, c.q, c.q2L, c.L] = turbmix(c, SMALL, zb, Sq, nu)
     # Particle tracking
     for part in c.particles:
-        pos = part.tracking(g, nu, c.u, dz, dt, N, u_star, u_crit, H, kzp)
-        part.x = pos[0]
-        part.z = pos[1]
+        if np.isnan(kzp.any()):
+            print('Kzp contains NaN and will introduce NaN in particle.z')
+        else:
+            pos = part.tracking(g, nu, c.u, dz, dt, N, u_star, u_crit, H, kzp)
+            part.x = pos[0]
+            part.z = pos[1]
 
 
 # Save previous step
