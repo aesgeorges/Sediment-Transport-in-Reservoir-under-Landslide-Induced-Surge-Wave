@@ -28,7 +28,7 @@ Cz = 50
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
 for i in range(N):
-    surf[i,:] = length[i]*0.5 +0.0001
+    surf[i,:] = length[i]*0.5 
 
 X = np.arange(0, W, dx)
 Y = np.arange(0, L, dy)
