@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N = 20
+N = 40
 L = 5
 W = 5
 H = 5
@@ -27,8 +27,9 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
-for i in range(N):
-    surf[i,:] = length[i]*0.5 
+for i in range(15,N):
+    surf[i,:] = length[i]*0.5
+
 
 X = np.arange(0, W, dx)
 Y = np.arange(0, L, dy)
@@ -43,8 +44,10 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 900
+total_time = 100
 
+ax.plot_surface(X,Y,surf,cmap='cool')
+plt.show()
 def animate(i, surf, U, V, Gu, Gv):
     ax.clear()
     Gu,Gv = update_matrices(U,V,f,nu_h,Gu,Gv,deltaZ,N,dt,dx,dy,dz,nu_v)
