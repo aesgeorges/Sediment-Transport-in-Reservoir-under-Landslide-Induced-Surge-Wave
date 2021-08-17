@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N = 40
+N = 20
 L = 5
 W = 5
 H = 5
@@ -27,8 +27,8 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
-for i in range(15,N):
-    surf[i,:] = length[i]*0.5
+for i in range(12,N):
+    surf[i,:] = length[i]*0.05
 
 
 X = np.arange(0, W, dx)
@@ -55,5 +55,5 @@ def animate(i, surf, U, V, Gu, Gv):
     ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
 
 ani = animation.FuncAnimation(fig, animate, frames = total_time, fargs=(surf, U, V, Gu, Gv), interval = dt)
-ani.save('Visualization/semiimplicittest0.gif', writer='imagemagick', fps=24)
+ani.save('Visualization/testb2.gif', writer='imagemagick', fps=24)
 #plt.show()

@@ -53,10 +53,10 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
         print("WARNING: NaN in surface vector.")
     for j in range(N):
         surf[:,j] = surf_vect[j*N:(j+1)*N]
-    surf[-1,:] = surf[-2,:] - 2*(surf[-3,:])
-    surf[:,-1] = surf[:,-2] - 2*(surf[:,-3])
-    surf[0:] = surf[1,:] - 2*(surf[2,:])
-    surf[:,0] = surf[:,1] - 2*(surf[:,2])
+    surf[:,0] = surf[:,1]
+    surf[:,-1] = surf[:,-2] 
+    surf[0,:] = surf[1,:] 
+    surf[-1,:] = surf[-2,:]
     return surf
 
 def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
