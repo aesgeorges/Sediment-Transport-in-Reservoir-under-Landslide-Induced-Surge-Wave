@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 N = 20
-L = 15
-W = 15
-H = 15
+L = 5
+W = 5
+H = 5
 dx = L/N
 dy = W/N
 dz = H/N
@@ -27,8 +27,8 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
-for i in range(15,N):
-    surf[i,:] = length[i]*0.5
+for i in range(12,N):
+    surf[i,:] = length[i]*0.05
 
 
 X = np.arange(0, W, dx)
@@ -59,5 +59,5 @@ def animate(i, surf, U, V, Gu, Gv):
     #ax.set_zlim(-1e-13, 1e-13)
     ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
 ani = animation.FuncAnimation(fig, animate, frames = total_time, fargs=(surf, U, V, Gu, Gv), interval = dt)
-ani.save('Visualization/test2long.gif', writer='imagemagick', fps=24)
+ani.save('Visualization/testb2.gif', writer='imagemagick', fps=24)
 #plt.show()
