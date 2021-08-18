@@ -4,6 +4,7 @@ from scipy.sparse import diags
 import pentapy as pp
 import math
 from setup import F_op
+from numba import jit
 
 def advance(surf,N,U,V,deltaZ,Gu,Gv,A,dt,dx,dy):
     surf = solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy)
@@ -16,7 +17,7 @@ def fivediag_maker(a,b,c,d,e,N):
     pos = [0,1,-1,2,-2]
     five_diag = (diags(data, pos, (N*N,N*N))).toarray()
     return five_diag
-
+@jit
 def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     d = np.zeros((N,N))
     q = np.zeros((N,N))
@@ -53,10 +54,10 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
         print("WARNING: NaN in surface vector.")
     for j in range(N):
         surf[:,j] = surf_vect[j*N:(j+1)*N]
-    surf[-1,:] = surf[-2,:] - 2*(surf[-3,:])
-    surf[:,-1] = surf[:,-2] - 2*(surf[:,-3])
-    surf[0:] = surf[1,:] - 2*(surf[2,:])
-    surf[:,0] = surf[:,1] - 2*(surf[:,2])
+    #surf[-1,:] = surf[-2,:] #- 2*(surf[-3,:])
+    #surf[:,-1] = surf[:,-2] #- 2*(surf[:,-3])
+    #surf[0:] = surf[1,:] #- 2*(surf[2,:])
+    #surf[:,0] = surf[:,1] #- 2*(surf[:,2])
     return surf
 
 def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
@@ -64,6 +65,10 @@ def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
         for j in range(N):
             b = Gu[i,j] - (((9.81*dt)/dx)*(surf[i+1,j]-surf[i,j])*deltaZ)#.reshape(N)
             U[i,j] = lstsq(A, b, rcond=None)[0]
+    U[-1,:] = U[-2,:] #- 2*(U[-3,:])
+    U[:,-1] = 0#U[:,-2] #- 2*(U[:,-3])
+    U[0,:] = U[1,:] #- 2*(U[2,:])
+    U[:,0] = 0#U[:,1] #- 2*(U[:,2])
     return U
 
 def solve_V(surf,V,N,deltaZ,Gv,A,dt,dy):
@@ -71,8 +76,12 @@ def solve_V(surf,V,N,deltaZ,Gv,A,dt,dy):
         for j in range(N-1):
             b = Gv[i,j] - (((9.81*dt)/dy)*(surf[i,j+1]-surf[i,j])*deltaZ)#.reshape(N)
             V[i,j] = lstsq(A, b, rcond=None)[0]
+    #V[-1,:] = V[-2,:] #- 2*(V[-3,:])
+    #V[:,-1] = V[:,-2] #- 2*(V[:,-3])
+    #V[0,:] = V[1,:] # 2*(V[2,:])
+    #V[:,0] = V[:,1] #-2*(V[:,2])
     return V
-
+@jit
 def update_matrices(U,V,f,nu_h,Gu,Gv,deltaZ,N,dt,dx,dy,dz,nu_v):
     print('updating Gu, Gv, 3D arrays...')
     Fu, Fv = F_op(U, V, f, nu_h, dt, dx, dy, dz, N)
