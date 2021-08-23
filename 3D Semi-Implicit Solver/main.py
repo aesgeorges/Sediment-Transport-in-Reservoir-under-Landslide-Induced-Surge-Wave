@@ -44,7 +44,7 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 100
+total_time = 175
 
 ax.plot_surface(X,Y,surf,cmap='cool')
 plt.show()
@@ -52,8 +52,12 @@ def animate(i, surf, U, V, Gu, Gv):
     ax.clear()
     Gu,Gv = update_matrices(U,V,f,nu_h,Gu,Gv,deltaZ,N,dt,dx,dy,dz,nu_v)
     surf, U, V = advance(surf,N,U,V,deltaZ,Gu,Gv,A,dt,dx,dy)
-    ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
+    ax.set_xlim(0, 15)
+    ax.set_ylim(0, 15)
+    ax.set(xlabel='X axis label', ylabel='Y axis label')
 
+    #ax.set_zlim(-1e-13, 1e-13)
+    ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
 ani = animation.FuncAnimation(fig, animate, frames = total_time, fargs=(surf, U, V, Gu, Gv), interval = dt)
 ani.save('Visualization/testb2.gif', writer='imagemagick', fps=24)
 #plt.show()
