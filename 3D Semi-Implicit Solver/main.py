@@ -27,7 +27,7 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
-for i in range(13,N):
+for i in range(10,13):
     surf[:,i] = 0.00005
 
 
@@ -44,7 +44,7 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 175
+total_time = 400
 
 ax.plot_surface(X,Y,surf,cmap='cool')
 plt.show()
@@ -52,8 +52,8 @@ def animate(i, surf, U, V, Gu, Gv):
     ax.clear()
     Gu,Gv = update_matrices(U,V,f,nu_h,Gu,Gv,deltaZ,N,dt,dx,dy,dz,nu_v)
     surf, U, V = advance(surf,N,U,V,deltaZ,Gu,Gv,A,dt,dx,dy)
-    ax.set_xlim(0, 15)
-    ax.set_ylim(0, 15)
+    #ax.set_xlim(0, 15)
+    #ax.set_ylim(0, 15)
     ax.set(xlabel='X axis label', ylabel='Y axis label')
 
     #ax.set_zlim(-1e-13, 1e-13)
