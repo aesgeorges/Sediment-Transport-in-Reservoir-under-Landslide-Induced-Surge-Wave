@@ -28,7 +28,7 @@ Cz = 50
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
 for i in range(N):
-    surf[:,i] = -0.000005 + (0.00001/L)*length[i]
+    surf[:,i] = -0.0000005 + (0.000001/L)*length[i]
 
 
 X = np.arange(0, W, dx)
@@ -44,7 +44,7 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 300
+total_time = 150
 
 ax.contourf(X,Y,surf,cmap='cool')
 ax.set(xlabel='X axis label', ylabel='Y axis label')
