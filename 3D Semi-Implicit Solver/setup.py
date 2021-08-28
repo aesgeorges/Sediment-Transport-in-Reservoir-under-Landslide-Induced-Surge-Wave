@@ -55,8 +55,8 @@ def tridiag_maker(a,b,c,N):
 # Setting up all 3D arrays/matrices
 def set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v):
     print('setting up matrices and 3D arrays...')
-    str_x = 0.05
-    str_y = 0.05
+    str_x = 0.5
+    str_y = 0.5
     bot_str = ((9.81*dt)/Cz**2)*(math.sqrt(U[0,0,-1]**2 + V[0,0,-1]**2))
     # Setting up G arrays
     for i in range(N):

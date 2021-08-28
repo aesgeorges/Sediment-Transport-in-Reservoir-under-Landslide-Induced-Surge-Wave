@@ -44,16 +44,16 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
             #surf_vect.append(surf[i,j])
             q_vect.append(q[i,j])
             d_vect.append(d[i,j])
-            si_vect.append(si[i,j])
-            sj_vect.append(sj[i,j])
+            si_vect.append(-1*si[i,j])
+            sj_vect.append(-1*sj[i,j])
     print('Vectorizing and solving surface...')
     Mat = fivediag_maker(d_vect, si_vect[1:], sj_vect[1:], si_vect[0:-1], sj_vect[0:-1],  N)
     res = q_vect
     surf_vect = pp.solve(Mat, res)
     if np.isnan(surf_vect).any():
         print("WARNING: NaN in surface vector.")
-    for j in range(N):
-        surf[:,j] = surf_vect[j*N:(j+1)*N]
+    for i in range(N):
+        surf[:,i] = surf_vect[i*N:(i+1)*N]
     surf[:,0] = surf[:,1]
     surf[:,-1] = surf[:,-2] 
     surf[0,:] = surf[1,:] 

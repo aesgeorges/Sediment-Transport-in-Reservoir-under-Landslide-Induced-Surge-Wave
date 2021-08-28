@@ -27,8 +27,8 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(0,L,dx)
-for i in range(10,13):
-    surf[:,i] = 0.00005
+for i in range(N):
+    surf[:,i] = -0.000005 + (0.00001/L)*length[i]
 
 
 X = np.arange(0, W, dx)
@@ -44,9 +44,10 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 400
+total_time = 300
 
-ax.plot_surface(X,Y,surf,cmap='cool')
+ax.contourf(X,Y,surf,cmap='cool')
+ax.set(xlabel='X axis label', ylabel='Y axis label')
 plt.show()
 def animate(i, surf, U, V, Gu, Gv):
     ax.clear()
@@ -59,5 +60,5 @@ def animate(i, surf, U, V, Gu, Gv):
     #ax.set_zlim(-1e-13, 1e-13)
     ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
 ani = animation.FuncAnimation(fig, animate, frames = total_time, fargs=(surf, U, V, Gu, Gv), interval = dt)
-ani.save('Visualization/testb2.gif', writer='imagemagick', fps=24)
+ani.save('Visualization/testd3.gif', writer='imagemagick', fps=24)
 #plt.show()
