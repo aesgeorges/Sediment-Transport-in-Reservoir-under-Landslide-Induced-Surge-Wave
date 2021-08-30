@@ -7,10 +7,10 @@ from setup import F_op
 from numba import jit
 
 def advance(surf,N,U,V,deltaZ,Gu,Gv,A,dt,dx,dy):
-    surf = solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy)
-    U = solve_U(surf,U,N,deltaZ,Gu,A,dt,dx)
-    V = solve_V(surf,V,N,deltaZ,Gv,A,dt,dy)
-    return surf, U, V
+    new_surf = solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy)
+    U = solve_U(new_surf,U,N,deltaZ,Gu,A,dt,dx)
+    V = solve_V(new_surf,V,N,deltaZ,Gv,A,dt,dy)
+    return new_surf, U, V
 
 def fivediag_maker(a,b,c,d,e,N):
     data = [a, b, d, c, e]
@@ -55,10 +55,10 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     for i in range(N):
         row = surf_vect[i*N:N*(i+1)]
         surf[:,i] = row
-    surf[:,0] = -0.5*surf[:,1]
-    surf[:,-1] = -0.5*surf[:,-2] 
-    surf[0,:] = -0.5*surf[1,:] 
-    surf[-1,:] = -0.5*surf[-2,:]
+    surf[:,0] = surf[:,1]
+    surf[:,-1] = surf[:,-2] 
+    surf[0,:] = surf[1,:] 
+    surf[-1,:] = surf[-2,:]
     return surf
 
 def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
