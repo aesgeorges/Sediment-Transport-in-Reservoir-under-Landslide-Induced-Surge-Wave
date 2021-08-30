@@ -17,7 +17,7 @@ def fivediag_maker(a,b,c,d,e,N):
     pos = [0,1,-1,2,-2]
     five_diag = (diags(data, pos, (N*N,N*N))).toarray()
     return five_diag
-@jit
+
 def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     d = np.zeros((N,N))
     q = np.zeros((N,N))
@@ -53,11 +53,12 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     if np.isnan(surf_vect).any():
         print("WARNING: NaN in surface vector.")
     for i in range(N):
-        surf[:,i] = surf_vect[i*N:(i+1)*N]
-    surf[:,0] = -surf[:,1]
-    surf[:,-1] = -surf[:,-2] 
-    surf[0,:] = -surf[1,:] 
-    surf[-1,:] = -surf[-2,:]
+        row = surf_vect[i*N:N*(i+1)]
+        surf[:,i] = row
+    surf[:,0] = -0.5*surf[:,1]
+    surf[:,-1] = -0.5*surf[:,-2] 
+    surf[0,:] = -0.5*surf[1,:] 
+    surf[-1,:] = -0.5*surf[-2,:]
     return surf
 
 def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
@@ -81,7 +82,7 @@ def solve_V(surf,V,N,deltaZ,Gv,A,dt,dy):
     #V[0,:] = V[1,:] # 2*(V[2,:])
     #V[:,0] = V[:,1] #-2*(V[:,2])
     return V
-@jit
+
 def update_matrices(U,V,f,nu_h,Gu,Gv,deltaZ,N,dt,dx,dy,dz,nu_v):
     print('updating Gu, Gv, 3D arrays...')
     Fu, Fv = F_op(U, V, f, nu_h, dt, dx, dy, dz, N)
