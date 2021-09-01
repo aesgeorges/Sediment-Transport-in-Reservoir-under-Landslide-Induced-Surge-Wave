@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N = 10
+N = 20
 L = 5
 W = 5
 H = 5
@@ -44,7 +44,7 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 500
+total_time = 150
 
 ax.plot_surface(X,Y,surf,cmap='cool')
 ax.set(xlabel='X axis label', ylabel='Y axis label')

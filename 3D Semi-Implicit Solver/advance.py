@@ -25,7 +25,7 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     d_vect = []
     surf_vect = []
     si_vect = []
-    sj_vect = []
+    sj_vect = [] 
     #print('surface calcs...')
     #print('computing compact terms...')
     termZ = np.transpose(deltaZ)@inv(A)@deltaZ
@@ -34,8 +34,8 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     for i in range(N-1):
         for j in range(N-1):
             termGu = np.transpose(deltaZ)@inv(A)@Gu[i+1,j]
-            termGv = np.transpose(deltaZ)@inv(A)@Gv[i,j]
-            termGu_mn = np.transpose(deltaZ)@inv(A)@Gu[i,j+1]
+            termGv = np.transpose(deltaZ)@inv(A)@Gv[i,j+1]
+            termGu_mn = np.transpose(deltaZ)@inv(A)@Gu[i,j]
             termGv_mn = np.transpose(deltaZ)@inv(A)@Gv[i,j]
             d[i,j] = 1 + si[i+1,j] + si[i,j] + sj[i,j+1] + sj[i,j]
             q[i,j] = surf[i,j] - (dt/dx)*(termGu - termGu_mn) - (dt/dy)*(termGv - termGv_mn)
@@ -47,18 +47,19 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
             si_vect.append(-1*si[i,j])
             sj_vect.append(-1*sj[i,j])
     print('Vectorizing and solving surface...')
-    Mat = fivediag_maker(d_vect, si_vect[1:], sj_vect[1:], si_vect[0:-1], sj_vect[0:-1],  N)
+    Mat = fivediag_maker(d_vect, si_vect[0:-1], sj_vect[0:-1], si_vect[1:], sj_vect[1:], N)
     res = q_vect
     surf_vect = pp.solve(Mat, res)
     if np.isnan(surf_vect).any():
+
         print("WARNING: NaN in surface vector.")
     for i in range(N):
         row = surf_vect[i*N:N*(i+1)]
         surf[:,i] = row
-    surf[:,0] = surf[:,1]
-    surf[:,-1] = surf[:,-2] 
-    surf[0,:] = surf[1,:] 
-    surf[-1,:] = surf[-2,:]
+    surf[:,0] = surf[:,2]
+    surf[:,-1] = surf[:,-3] 
+    surf[0,:] = surf[2,:] 
+    surf[-1,:] = surf[-3,:]
     return surf
 
 def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):

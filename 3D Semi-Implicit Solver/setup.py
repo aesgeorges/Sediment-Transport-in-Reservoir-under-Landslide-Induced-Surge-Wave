@@ -57,7 +57,7 @@ def set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v):
     print('setting up matrices and 3D arrays...')
     str_x = 0.5
     str_y = 0.5
-    bot_str = ((9.81*dt)/Cz**2)*(math.sqrt(U[0,0,-1]**2 + V[0,0,-1]**2))
+    bot_str = ((9.81*dt)/Cz**2)*(math.sqrt(U.mean()**2 + V.mean()**2))
     # Setting up G arrays
     for i in range(N):
         for j in range(N):
