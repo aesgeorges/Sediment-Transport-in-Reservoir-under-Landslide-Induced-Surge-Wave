@@ -67,10 +67,10 @@ def solve_U(surf,U,N,deltaZ,Gu,A,dt,dx):
         for j in range(N):
             b = Gu[i,j] - (((9.81*dt)/dx)*(surf[i+1,j]-surf[i,j])*deltaZ)#.reshape(N)
             U[i,j] = lstsq(A, b, rcond=None)[0]
-    U[-1,:] = U[-2,:] #- 2*(U[-3,:])
-    U[:,-1] = 0#U[:,-2] #- 2*(U[:,-3])
-    U[0,:] = U[1,:] #- 2*(U[2,:])
-    U[:,0] = 0#U[:,1] #- 2*(U[:,2])
+    #U[-1,:] = U[-2,:] #- 2*(U[-3,:])
+    #U[:,-1] = 0#U[:,-2] #- 2*(U[:,-3])
+    #U[0,:] = U[1,:] #- 2*(U[2,:])
+    #U[:,0] = 0#U[:,1] #- 2*(U[:,2])
     return U
 
 def solve_V(surf,V,N,deltaZ,Gv,A,dt,dy):

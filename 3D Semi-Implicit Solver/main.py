@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 N = 20
-L = 5
-W = 5
+L = 5000
+W = 5000
 H = 5
 dx = L/N
 dy = W/N
 dz = H/N
-dt = 60
+dt = 10
 nu_h = 0.0001
 nu_v = 0.0001
 f = 0.0000891 # Coriolis Parameter - at San Francisco latitude 37.773972
@@ -27,8 +27,10 @@ Cz = 50
 
 surf = np.zeros((N,N)) # Surface - eta in x,z
 length = np.arange(L,0,-dx)
+width = np.arange(W,0,-dy)
 for i in range(N):
-    surf[:,i] = -0.0000005 + (0.000001/L)*length[i]
+    #surf[:,i] = -0.0000005 + (0.000001/L)*length[i]
+    surf[:,i] = 0.9*math.exp(-((length[i]-2500)**2)/(2*500**2))
 
 
 X = np.arange(0, W, dx)
@@ -44,7 +46,7 @@ U,V,deltaZ,Gu,Gv,A = set_matrices(U,V,Cz,Fu,Fv,Gu,Gv,deltaZ,N,dt,dz,nu_v)
 #print(U)
 #print(V)
 
-total_time = 150
+total_time = 50
 
 ax.plot_surface(X,Y,surf,cmap='cool')
 ax.set(xlabel='X axis label', ylabel='Y axis label')
@@ -56,9 +58,9 @@ def animate(i, surf, U, V, Gu, Gv):
     #ax.set_xlim(0, 15)
     #ax.set_ylim(0, 15)
     ax.set(xlabel='X axis label', ylabel='Y axis label')
-
+    ax.set_title('CFD t=' + str(dt*i) + 's')
     #ax.set_zlim(-1e-13, 1e-13)
     ax.plot_surface(X,Y,surf,rstride=1, cstride=1, cmap='cool', linewidth=0, antialiased=False)
 ani = animation.FuncAnimation(fig, animate, frames = total_time, fargs=(surf, U, V, Gu, Gv), interval = dt)
-ani.save('Visualization/testd3.gif', writer='imagemagick', fps=24)
+ani.save('Visualization/gaussU.gif', writer='imagemagick', fps=24)
 #plt.show()
