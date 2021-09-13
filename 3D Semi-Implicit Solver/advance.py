@@ -26,6 +26,8 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     surf_vect = []
     si_vect = []
     sj_vect = [] 
+    termGu = []
+    termGv = []
     #print('surface calcs...')
     #print('computing compact terms...')
     termZ = np.transpose(deltaZ)@inv(A)@deltaZ
@@ -33,16 +35,23 @@ def solve_surf(surf,N,deltaZ,Gu,Gv,A,dt,dx,dy):
     sj = (9.81*((dt**2)/(dy**2))*termZ)*np.ones((N,N))
     for i in range(N-1):
         for j in range(N-1):
-            termGu = np.transpose(deltaZ)@inv(A)@Gu[i+1,j]
-            termGv = np.transpose(deltaZ)@inv(A)@Gv[i,j+1]
-            termGu_mn = np.transpose(deltaZ)@inv(A)@Gu[i,j]
-            termGv_mn = np.transpose(deltaZ)@inv(A)@Gv[i,j]
+            #termGu = np.transpose(deltaZ)@inv(A)@Gu[i+1,j]
+            #termGv = np.transpose(deltaZ)@inv(A)@Gv[i,j+1]
+            #termGu_mn = np.transpose(deltaZ)@inv(A)@Gu[i,j]
+            #termGv_mn = np.transpose(deltaZ)@inv(A)@Gv[i,j]
             d[i,j] = 1 + si[i+1,j] + si[i,j] + sj[i,j+1] + sj[i,j]
-            q[i,j] = surf[i,j] - (dt/dx)*(termGu - termGu_mn) - (dt/dy)*(termGv - termGv_mn)
+            #q[i,j] = surf[i,j]  - (dt/dy)*(termGv - termGv_mn) - (dt/dx)*(termGu - termGu_mn)
     for j in range(N):
         for i in range(N):
-            #surf_vect.append(surf[i,j])
-            q_vect.append(q[i,j])
+            surf_vect.append(surf[i,j])
+            termGv.append(np.transpose(deltaZ)@inv(A)@Gu[i,j])
+            termGv.append(np.transpose(deltaZ)@inv(A)@Gv[i,j])
+    for i in range(1, len(termGu)):
+        q_vect = -1*(dt/dx)*(termGu[i] - termGu[i-1]) - (dt/dx)*(termGv[i] - termGv[i-1])
+    q_vect = q_vect + surf_vect
+    for j in range(N):
+        for i in range(N):
+            #q_vect.append(q[i,j])
             d_vect.append(d[i,j])
             si_vect.append(-1*si[i,j])
             sj_vect.append(-1*sj[i,j])
