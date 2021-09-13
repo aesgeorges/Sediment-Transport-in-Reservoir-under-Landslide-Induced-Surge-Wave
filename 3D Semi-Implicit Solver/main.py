@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N = 10
+N = 20
 L = 5000
 W = 5000
 H = 5
@@ -30,7 +30,7 @@ length = np.arange(L,0,-dx)
 width = np.arange(W,0,-dy)
 for i in range(N):
     ##surf[:,i] = -0.0000005 + (0.000001/L)*length[i]
-    surf[:,i] = 5e-15*math.exp(-((length[i]-2500)**2)/(2*500**2))
+    surf[i] = 5e-15*math.exp(-((length[i]-2500)**2)/(2*500**2))
 
 
 X = np.arange(0, W, dx)
